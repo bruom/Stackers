@@ -31,6 +31,10 @@ class GameScene: SKScene {
     //node que é o bloco a ser colocado
     var proxBloco:Block!
     
+    
+    //debug
+    var debugNode:SKSpriteNode!
+    
     override func didMoveToView(view: SKView) {
         
         self.stack = SKSpriteNode(color: UIColor.blueColor(), size: CGSizeMake(stackWidth, stackHeigth))
@@ -38,6 +42,10 @@ class GameScene: SKScene {
         self.addChild(stack)
         
         self.stackPos = stack.position
+        
+        debugNode = SKSpriteNode(color: UIColor.greenColor(), size: CGSizeMake(stackWidth, blockHeigth))
+        debugNode.position = CGPointMake(stackPos.x, stackHeigth)
+        self.addChild(debugNode)
         
         let myLabel = SKLabelNode(fontNamed:"Helvetica")
         myLabel.text = "Stackers!";
@@ -60,13 +68,35 @@ class GameScene: SKScene {
         
     }
     
+    
+    //ta tudo ruim isso aqui, tem que arrumar
     func addToStack(bloco: Block){
         stackSize++
-        var blocoXRelativo = bloco.position.x - self.stack.position.x
-        self.stackPos = CGPointMake(bloco.position.x, stackPos.y)
+        
+        var oldWidth = stackWidth
+        var leftEdge = stackPos.x - stackWidth/2
+        var rightEdge = stackPos.x + stackWidth/2
+        
+        let blocoCortado = self.cortaBloco(bloco)
+        //self.stackPos = CGPointMake(bloco.position.x, stackPos.y)
+        
+        self.stack.addChild(blocoCortado)
+        var blocoXRelativo:CGFloat
+        
+        
+        //o stackPos ta certo, o blocoXRelativo ta broken
+        if bloco.position.x <= stackPos.x {
+            blocoXRelativo = (bloco.position.x - stackPos.x) + stackWidth/2
+            self.stackPos = CGPointMake(leftEdge + stackWidth/2, stackPos.y)
+        }
+        else{
+            blocoXRelativo = rightEdge - leftEdge - stackWidth/2
+            self.stackPos = CGPointMake(rightEdge - stackWidth/2, stackPos.y)
+        }
+        
         bloco.removeFromParent()
-        self.stack.addChild(bloco)
-        bloco.position = CGPointMake(blocoXRelativo, blockHeigth/2 + CGFloat(stackSize)*blockHeigth)
+        
+        blocoCortado.position = CGPointMake(blocoXRelativo, blockHeigth/2 + CGFloat(stackSize)*blockHeigth)
         self.stack.runAction(SKAction.moveBy(CGVectorMake(0, -self.blockHeigth), duration: 0.5))
     }
     
@@ -84,7 +114,7 @@ class GameScene: SKScene {
         
         //se o bloco estiver pelo menos parcialmente sobre o topo da pilha
         if proxBloco.position.x < (stackPos.x + stackWidth) && (proxBloco.position.x + stackWidth) > stackPos.x {
-            proxBloco.runAction(SKAction.moveToY(stack.position.y + blockHeigth/2 + CGFloat(stackSize)*blockHeigth, duration: 1.0), completion: { () -> Void in
+            proxBloco.runAction(SKAction.moveToY(stackPos.y + blockHeigth/2 + CGFloat(stackSize)*blockHeigth, duration: 1.0), completion: { () -> Void in
                 self.addToStack(self.proxBloco)
                 self.novoBloco()
             })
@@ -97,8 +127,32 @@ class GameScene: SKScene {
             })
         }
     }
+    
+    func cortaBloco(bloco: Block) -> Block{
+        var novaLargura:CGFloat = 0.0
+        
+        //caso de acerto perfeito
+        if bloco.position.x == stackPos.x {
+            novaLargura = stackWidth
+        }
+        
+        //caso sobre para a esquerda
+        if bloco.position.x < stackPos.x {
+            novaLargura = stackWidth - (stackPos.x - bloco.position.x)
+        }
+        
+        //caso sobre para a direita
+        if bloco.position.x > stackPos.x {
+            novaLargura = stackWidth - (bloco.position.x - stackPos.x)
+        }
+        self.stackWidth = novaLargura
+        var blocoCortado = Block(texture: SKTexture(imageNamed: "block"), tam: CGSizeMake(stackWidth, blockHeigth))
+        return blocoCortado
+    }
    
     override func update(currentTime: CFTimeInterval) {
         /* Called before each frame is rendered */
+        debugNode.size = CGSizeMake(stackWidth, blockHeigth)
+        debugNode.position = CGPointMake(stackPos.x, stackHeigth)
     }
 }
