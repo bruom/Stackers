@@ -17,7 +17,7 @@ class GameScene: SKScene {
     //variaveis que controlam a pilha de blocos
     
     //largura do bloco do topo - controla o tamanho do próximo bloco criado
-    var stackWidth:CGFloat = 50.0
+    var stackWidth:CGFloat = 80.0
     //altura do bloco do topo
     var stackHeigth:CGFloat = 80.0
     //tamanho da pilha (numero de blocos)
@@ -62,9 +62,11 @@ class GameScene: SKScene {
     
     func addToStack(bloco: Block){
         stackSize++
+        var blocoXRelativo = bloco.position.x - self.stack.position.x
+        self.stackPos = CGPointMake(bloco.position.x, stackPos.y)
         bloco.removeFromParent()
         self.stack.addChild(bloco)
-        bloco.position = CGPointMake(0, blockHeigth/2 + CGFloat(stackSize)*blockHeigth)
+        bloco.position = CGPointMake(blocoXRelativo, blockHeigth/2 + CGFloat(stackSize)*blockHeigth)
         self.stack.runAction(SKAction.moveBy(CGVectorMake(0, -self.blockHeigth), duration: 0.5))
     }
     
