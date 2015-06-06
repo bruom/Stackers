@@ -15,6 +15,7 @@
 		153B75EE1B2394D100EC5070 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 153B75ED1B2394D100EC5070 /* Images.xcassets */; };
 		153B75F11B2394D100EC5070 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 153B75EF1B2394D100EC5070 /* LaunchScreen.xib */; };
 		153B75FD1B2394D200EC5070 /* StackersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 153B75FC1B2394D200EC5070 /* StackersTests.swift */; };
+		153B76071B23962400EC5070 /* Block.swift in Sources */ = {isa = PBXBuildFile; fileRef = 153B76061B23962400EC5070 /* Block.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,6 +41,7 @@
 		153B75F61B2394D200EC5070 /* StackersTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StackersTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		153B75FB1B2394D200EC5070 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		153B75FC1B2394D200EC5070 /* StackersTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackersTests.swift; sourceTree = "<group>"; };
+		153B76061B23962400EC5070 /* Block.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Block.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,6 +91,7 @@
 				153B75ED1B2394D100EC5070 /* Images.xcassets */,
 				153B75EF1B2394D100EC5070 /* LaunchScreen.xib */,
 				153B75E01B2394D100EC5070 /* Supporting Files */,
+				153B76061B23962400EC5070 /* Block.swift */,
 			);
 			path = Stackers;
 			sourceTree = "<group>";
@@ -220,6 +223,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				153B75E71B2394D100EC5070 /* GameScene.swift in Sources */,
+				153B76071B23962400EC5070 /* Block.swift in Sources */,
 				153B75E91B2394D100EC5070 /* GameViewController.swift in Sources */,
 				153B75E31B2394D100EC5070 /* AppDelegate.swift in Sources */,
 			);
