@@ -69,11 +69,9 @@ class GameScene: SKScene {
 //        self.addChild(novoBloco)
 //        self.addToStack(novoBloco)
         self.soltaBloco()
-        
-        
+
     }
-    
-    
+
     //ta tudo ruim isso aqui, tem que arrumar
     func addToStack(bloco: Block){
         stackSize++
@@ -82,6 +80,7 @@ class GameScene: SKScene {
         var oldWidth = stackWidth
         var leftEdge = stackPos.x - stackWidth/2
         var rightEdge = stackPos.x + stackWidth/2
+
 //        println("Left: \(leftEdge)")
 //        println("Mid: \(stackPos.x)")
 //        println("Right: \(rightEdge)")
@@ -114,11 +113,11 @@ class GameScene: SKScene {
         self.topo = blocoCortado
         self.stack.runAction(SKAction.moveBy(CGVectorMake(0, -self.blockHeigth), duration: 0.5))
     }
-    
+
     func novoBloco(){
         proxBloco = Block(texture: SKTexture(imageNamed: "block"), tam: CGSizeMake(self.stackWidth, self.blockHeigth))
         
-        proxBloco.position = CGPointMake(self.stackWidth, self.size.height * 0.8)
+        proxBloco.position = CGPointMake(self.stackWidth/2, self.size.height * 0.95)
         self.addChild(proxBloco)
         proxBloco.moveAround(self)
         
@@ -144,12 +143,8 @@ class GameScene: SKScene {
     }
     
     func cortaBloco(bloco: Block) -> Block{
-        var novaLargura:CGFloat = 0.0
-        
-        //caso de acerto perfeito
-        if bloco.position.x == stackPos.x {
-            novaLargura = stackWidth
-        }
+		// Já inicia na largura perfeita, e troca caso tenha sobra
+        var novaLargura:CGFloat = stackWidth
         
         //caso sobre para a esquerda
         if bloco.position.x < stackPos.x {

@@ -16,12 +16,13 @@ class Block: SKSpriteNode {
     
     init(texture:SKTexture, tam:CGSize){
         super.init(texture: texture, color: UIColor.blueColor(), size: tam)
-        
-        
     }
     
     func moveAround(scene: GameScene){
-        let moveAction = SKAction.repeatActionForever(SKAction.sequence([SKAction.moveByX(scene.size.width*0.9, y: 0, duration: 2), SKAction.moveByX(-scene.size.width*0.9, y: 0, duration: 2)]))
+        let moveAction = SKAction.repeatActionForever(SKAction.sequence([
+			SKAction.moveByX(scene.size.width-self.size.width, y: 0, duration: 2),
+			SKAction.moveByX(-(scene.size.width-self.size.width), y: 0, duration: 2)
+		]))
         self.runAction(moveAction)
     }
     
