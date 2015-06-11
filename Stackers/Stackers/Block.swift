@@ -10,12 +10,16 @@ import SpriteKit
 
 class Block: SKSpriteNode {
     
+    var perfeito:Bool!
+    
     required init?(coder aDecoder:NSCoder) {
         super.init(coder: aDecoder)
+        perfeito = false
     }
     
     init(texture:SKTexture, tam:CGSize){
         super.init(texture: texture, color: UIColor.blueColor(), size: tam)
+        perfeito = false
     }
     
     func moveAround(scene: GameScene){

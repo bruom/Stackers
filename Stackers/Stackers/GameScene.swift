@@ -11,6 +11,10 @@ import SpriteKit
 class GameScene: SKScene {
     
     //constantes
+    //margem aceitavel para acerto perfeito
+    let deltaPerfeito:CGFloat = 10.0
+    //tamanho bonus para cada acerto perfeito
+    let bonusWidth:CGFloat = 15.0
     //altura de cada bloco
     let blockHeigth:CGFloat = 30.0
     
@@ -110,6 +114,10 @@ class GameScene: SKScene {
         
 //        blocoCortado.position = CGPointMake(stackPos.x - leftEdge - oldWidth/2, blockHeigth/2 + CGFloat(stackSize)*blockHeigth)
         self.topo.addChild(blocoCortado)
+        if blocoCortado.perfeito == true {
+            blocoCortado.runAction(SKAction.resizeToWidth(blocoCortado.size.width + bonusWidth, duration: 0.1))
+            stackWidth += bonusWidth
+        }
         self.topo = blocoCortado
         self.stack.runAction(SKAction.moveBy(CGVectorMake(0, -self.blockHeigth), duration: 0.5))
     }
@@ -145,6 +153,15 @@ class GameScene: SKScene {
     func cortaBloco(bloco: Block) -> Block{
 		// Já inicia na largura perfeita, e troca caso tenha sobra
         var novaLargura:CGFloat = stackWidth
+        
+        
+        //caso de acerto perfeito
+        if abs(bloco.position.x - stackPos.x) < self.deltaPerfeito {
+            
+            var blocoCortado = Block(texture: SKTexture(imageNamed: "block"), tam: CGSizeMake(stackWidth, blockHeigth))
+            blocoCortado.perfeito = true
+            return blocoCortado
+        }
         
         //caso sobre para a esquerda
         if bloco.position.x < stackPos.x {
