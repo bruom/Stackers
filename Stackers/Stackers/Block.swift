@@ -23,9 +23,13 @@ class Block: SKSpriteNode {
     }
     
     func moveAround(scene: GameScene){
+        var modVelocidade:Double = 2 - (0.05 * Double(scene.stackSize))
+        if modVelocidade < 0.8 {
+            modVelocidade = 0.8
+        }
         let moveAction = SKAction.repeatActionForever(SKAction.sequence([
-			SKAction.moveByX(scene.size.width-self.size.width, y: 0, duration: 2),
-			SKAction.moveByX(-(scene.size.width-self.size.width), y: 0, duration: 2)
+			SKAction.moveByX(scene.size.width-self.size.width, y: 0, duration: modVelocidade),
+			SKAction.moveByX(-(scene.size.width-self.size.width), y: 0, duration: modVelocidade)
 		]))
         self.runAction(moveAction)
     }

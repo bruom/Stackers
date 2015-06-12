@@ -79,6 +79,7 @@ class GameScene: SKScene {
     //ta tudo ruim isso aqui, tem que arrumar
     func addToStack(bloco: Block){
         stackSize++
+        self.stack.hidden = false
         
         //valores relativos ao topo da pilha antes da adição do novo bloco
         var oldWidth = stackWidth
@@ -119,7 +120,14 @@ class GameScene: SKScene {
             stackWidth += bonusWidth
         }
         self.topo = blocoCortado
-        self.stack.runAction(SKAction.moveBy(CGVectorMake(0, -self.blockHeigth), duration: 0.5))
+        self.stack.runAction(SKAction.moveBy(CGVectorMake(0, -self.blockHeigth), duration: 0.3), completion: { () -> Void in
+            
+            //aqui fica INVISIBRU
+            if self.stackSize > 5 {
+                self.stack.hidden = true
+            }
+        })
+        
     }
 
     func novoBloco(){
@@ -136,7 +144,7 @@ class GameScene: SKScene {
         
         //se o bloco estiver pelo menos parcialmente sobre o topo da pilha
         if proxBloco.position.x < (stackPos.x + stackWidth) && (proxBloco.position.x + stackWidth) > stackPos.x {
-            proxBloco.runAction(SKAction.moveToY(stackPos.y + blockHeigth/2 + CGFloat(stackSize)*blockHeigth, duration: 1.0), completion: { () -> Void in
+            proxBloco.runAction(SKAction.moveToY(self.topo.position.y + blockHeigth + blockHeigth, duration: 1.0), completion: { () -> Void in
                 self.addToStack(self.proxBloco)
                 self.novoBloco()
             })
