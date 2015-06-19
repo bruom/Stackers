@@ -12,11 +12,18 @@ class GameScene: SKScene {
     
     //constantes
     //margem aceitavel para acerto perfeito
-    let deltaPerfeito:CGFloat = 10.0
+    let deltaPerfeito:CGFloat = 5.0
     //tamanho bonus para cada acerto perfeito
     let bonusWidth:CGFloat = 15.0
     //altura de cada bloco
     let blockHeigth:CGFloat = 30.0
+    //largura original
+    let startWidth:CGFloat = 80.0
+    
+    //flags do jogo
+    
+    //perdeu
+    var perdeu:Bool = false
     
     //variaveis que controlam a pilha de blocos
     
@@ -38,6 +45,9 @@ class GameScene: SKScene {
     //node que é o bloco a ser colocado
     var proxBloco:Block!
     
+    //node da tela de derrota
+    var perdeuNode:SKNode!
+    
     
     //debug
     //var debugNode:SKSpriteNode!
@@ -55,13 +65,13 @@ class GameScene: SKScene {
 //        debugNode = SKSpriteNode(color: UIColor.greenColor(), size: CGSizeMake(stackWidth, blockHeigth))
 //        debugNode.position = CGPointMake(stackPos.x, stackHeigth)
 //        self.addChild(debugNode)
-        
-        let myLabel = SKLabelNode(fontNamed:"Helvetica")
-        myLabel.text = "Stackers!";
-        myLabel.fontSize = 30;
-        myLabel.position = CGPoint(x:CGRectGetMidX(self.frame), y:CGRectGetMidY(self.frame));
-        
-        self.addChild(myLabel)
+//        
+//        let myLabel = SKLabelNode(fontNamed:"Helvetica")
+//        myLabel.text = "Stackers!";
+//        myLabel.fontSize = 30;
+//        myLabel.position = CGPoint(x:CGRectGetMidX(self.frame), y:CGRectGetMidY(self.frame));
+//        
+//        self.addChild(myLabel)
         
         self.novoBloco()
         
@@ -72,14 +82,22 @@ class GameScene: SKScene {
 //        novoBloco.position = CGPointMake(self.size.width/2, stackHeigth)
 //        self.addChild(novoBloco)
 //        self.addToStack(novoBloco)
-        self.soltaBloco()
+        if self.perdeu == false{
+            self.soltaBloco()
+        } else {
+            self.perdeu = false
+            self.stackSize = 0
+            self.perdeuNode.removeFromParent()
+            self.reset()
+        }
 
     }
 
     //ta tudo ruim isso aqui, tem que arrumar
     func addToStack(bloco: Block){
         stackSize++
-        self.stack.hidden = false
+        //self.stack.hidden = false
+        //self.stack.runAction(SKAction.fadeInWithDuration(0.3))
         
         //valores relativos ao topo da pilha antes da adição do novo bloco
         var oldWidth = stackWidth
@@ -123,8 +141,11 @@ class GameScene: SKScene {
         self.stack.runAction(SKAction.moveBy(CGVectorMake(0, -self.blockHeigth), duration: 0.3), completion: { () -> Void in
             
             //aqui fica INVISIBRU
-            if self.stackSize > 5 {
-                self.stack.hidden = true
+            if self.stackSize == 5 {
+                //self.stack.hidden = true
+                //self.stack.runAction((SKAction.fadeOutWithDuration(0.5)))
+                let fadeAction = SKAction.sequence([SKAction.fadeOutWithDuration(0.3), SKAction.waitForDuration(0.3),SKAction.fadeInWithDuration(0.3)])
+                self.stack.runAction(SKAction.repeatActionForever(fadeAction))
             }
         })
         
@@ -152,8 +173,9 @@ class GameScene: SKScene {
         }
         else{
             proxBloco.runAction(SKAction.moveToY(-blockHeigth, duration: 1.0), completion: { () -> Void in
-                self.novoBloco()
+                //self.novoBloco()
                 //ou, sabe, perder o jogo
+                self.lose()
             })
         }
     }
@@ -183,6 +205,32 @@ class GameScene: SKScene {
         self.stackWidth = novaLargura
         var blocoCortado = Block(texture: SKTexture(imageNamed: "block"), tam: CGSizeMake(stackWidth, blockHeigth))
         return blocoCortado
+    }
+    
+    func lose(){
+        self.perdeu = true
+        self.perdeuNode = SKSpriteNode(texture: SKTexture(imageNamed: "curveRect"), color: UIColor.clearColor(), size: CGSizeMake(self.size.width-100, self.size.height-10))
+        perdeuNode.position = CGPoint(x:CGRectGetMidX(self.frame), y:CGRectGetMidY(self.frame))
+        perdeuNode.alpha = 0.8
+        let labelPerdeu = SKLabelNode(fontNamed: "Helvetica")
+        labelPerdeu.text = "Perdeu!"
+        self.perdeuNode.addChild(labelPerdeu)
+        labelPerdeu.position = CGPoint(x:CGRectGetMidX(self.frame), y:CGRectGetMidY(self.frame))
+        self.addChild(perdeuNode)
+    }
+    
+    func reset(){
+        self.stack.removeFromParent()
+        self.stack = SKSpriteNode(color: UIColor.blueColor(), size: CGSizeMake(stackWidth, stackHeigth))
+        stack.position = CGPointMake(self.size.width/2, stackHeigth/2)
+        self.addChild(stack)
+        
+        topo = stack
+        
+        self.stackPos = stack.position
+        self.stackWidth = self.startWidth
+        
+        self.novoBloco()
     }
    
     override func update(currentTime: CFTimeInterval) {
