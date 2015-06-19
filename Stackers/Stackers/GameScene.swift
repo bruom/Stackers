@@ -36,6 +36,9 @@ class GameScene: SKScene {
     //posicao do topo da pilha
     var stackPos:CGPoint!
     
+    //variacao da posicao do topo da pilha com relacao a posicao do ojbeto da pilha em si
+    var diff:CGFloat = 0
+    
     //node que representa a pilha de blocos
     var stack:SKSpriteNode!
     
@@ -127,6 +130,9 @@ class GameScene: SKScene {
             blocoXRelativo = rightEdge - leftEdge - stackWidth/2
         }
         
+        self.diff = bloco.position.x - self.stackPos.x
+        
+        
         bloco.removeFromParent()
         
         blocoCortado.position = CGPointMake(stackPos.x - leftEdge - oldWidth/2, blockHeigth)///2 + CGFloat(stackSize)*blockHeigth)
@@ -138,7 +144,23 @@ class GameScene: SKScene {
             stackWidth += bonusWidth
         }
         self.topo = blocoCortado
+        
+        //debug
+        blocoCortado.physicsBody = SKPhysicsBody(rectangleOfSize: blocoCortado.size)
+        blocoCortado.physicsBody?.dynamic = false
+        
         self.stack.runAction(SKAction.moveBy(CGVectorMake(0, -self.blockHeigth), duration: 0.3), completion: { () -> Void in
+            
+            //aqui anda pra lá e pra cá
+            if self.stackSize == 3 {
+                let moveAroundAction = SKAction.repeatActionForever(SKAction.sequence([
+                    SKAction.moveToX(100, duration: 1.5),
+                    SKAction.moveToX(self.size.width-100, duration: 1.5)
+//                    SKAction.moveByX(self.size.width-self.size.width/2, y: 0, duration: 1),
+//                    SKAction.moveByX(-(self.size.width-self.size.width/2), y: 0, duration: 1)
+                    ]))
+                self.stack.runAction(moveAroundAction)
+            }
             
             //aqui fica INVISIBRU
             if self.stackSize == 5 {
@@ -154,6 +176,10 @@ class GameScene: SKScene {
     func novoBloco(){
         proxBloco = Block(texture: SKTexture(imageNamed: "block"), tam: CGSizeMake(self.stackWidth, self.blockHeigth))
         
+        //debug
+        proxBloco.physicsBody = SKPhysicsBody(rectangleOfSize: proxBloco.size)
+        proxBloco.physicsBody?.dynamic = false
+        
         proxBloco.position = CGPointMake(self.stackWidth/2, self.size.height * 0.95)
         self.addChild(proxBloco)
         proxBloco.moveAround(self)
@@ -163,21 +189,29 @@ class GameScene: SKScene {
     func soltaBloco(){
         proxBloco.removeAllActions()
         
-        //se o bloco estiver pelo menos parcialmente sobre o topo da pilha
-        if proxBloco.position.x < (stackPos.x + stackWidth) && (proxBloco.position.x + stackWidth) > stackPos.x {
-            proxBloco.runAction(SKAction.moveToY(self.topo.position.y + blockHeigth + blockHeigth, duration: 1.0), completion: { () -> Void in
+        proxBloco.runAction(SKAction.moveToY(self.topo.position.y + blockHeigth + blockHeigth, duration: 0.5), completion: { () -> Void in
+            
+//            //calcular a diferença da posicao do stack com a do topo atual
+//            var diff = self.stackPos.x - self.stack.position.x
+//            
+//            self.stackPos.x = self.stack.position.x + diff
+            
+            //se o bloco estiver pelo menos parcialmente sobre o topo da pilha
+            if self.proxBloco.position.x < (self.stackPos.x + self.stackWidth) && (self.proxBloco.position.x + self.stackWidth) > self.stackPos.x {
                 self.addToStack(self.proxBloco)
                 self.novoBloco()
-            })
+                
+            }
+            else{
+                self.proxBloco.runAction(SKAction.moveToY(-self.blockHeigth, duration: 0.25), completion: { () -> Void in
+                    //self.novoBloco()
+                    //ou, sabe, perder o jogo
+                    self.lose()
+                })
+            }
             
-        }
-        else{
-            proxBloco.runAction(SKAction.moveToY(-blockHeigth, duration: 1.0), completion: { () -> Void in
-                //self.novoBloco()
-                //ou, sabe, perder o jogo
-                self.lose()
-            })
-        }
+        })
+        
     }
     
     func cortaBloco(bloco: Block) -> Block{
@@ -220,6 +254,7 @@ class GameScene: SKScene {
     }
     
     func reset(){
+        self.diff = 0
         self.stack.removeFromParent()
         self.stack = SKSpriteNode(color: UIColor.blueColor(), size: CGSizeMake(stackWidth, stackHeigth))
         stack.position = CGPointMake(self.size.width/2, stackHeigth/2)
@@ -234,8 +269,8 @@ class GameScene: SKScene {
     }
    
     override func update(currentTime: CFTimeInterval) {
-        /* Called before each frame is rendered */
-//        debugNode.size = CGSizeMake(stackWidth, blockHeigth)
-//        debugNode.position = CGPointMake(stackPos.x, stackHeigth)
+        println(self.stackPos.x)
+        //println(self.stack.position.x)
+        self.stackPos.x = self.stack.position.x + self.diff
     }
 }
